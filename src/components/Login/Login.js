@@ -15,18 +15,32 @@ const Login = () => {
         firebase.initializeApp(firebaseConfig);
     }
     
+
     const handleGoogleSignIn = () => {
         var provider = new firebase.auth.GoogleAuthProvider();
         firebase.auth().signInWithPopup(provider).then(function(result) {
             const {displayName, email} = result.user;
             const signedInUser = {name: displayName, email} 
+           
+            // console.log(sessionStorage.getItem('token'))
+            storeAuthToken();
             setLoggedInUser(signedInUser);
-            history.replace(from);
             // ...
           }).catch(function(error) {
             const errorMessage = error.message;
             console.log(errorMessage);
           });
+        }
+        
+        const storeAuthToken = () => {
+          firebase.auth().currentUser.getIdToken(/* forceRefresh */ true)
+          .then(function(idToken) {
+            console.log(idToken);
+            sessionStorage.setItem('token', idToken)
+            history.replace(from);
+      }).catch(function(error) {
+        // Handle error
+      });
     }
     return (
         <div>
